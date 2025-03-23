@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Preparing for HW1: Tasks for appUser $username</title>
+</head>
+
+<body>
+<h1>Preparing for HW1: Tasks for appUser $username</h1>
+
+<p>All IT systems of MI-6 have been compromised. Her Majesty's appUsers are at risk.</p>
+<center><a href="https://www.thesun.co.uk/news/1831866/mi6-job-how-to-apply-money-who-can/" target="_blank"><img alt="" src="src/main/resources/static/motivation.webp" width="500"/></a></center> 
+<p>Your task is to develop a new secret appUser management system for MI-6.</p>
+<p>Don't work with anyone else on this. Don't share any information. You may only trust some of the TAs.</p>
+
+<h2>Task 1: Configuration</h2>
+<p>Configure the project to support the use of JSPs as view technology. JSPs must be configured to be placed inside folder <code>src/main/webapp/WEB-INF/views/</code>.</p>
+
+<h2>Task 2: Domain Classes</h2>
+
+<p>Create class <code>com.example.skillbuild.domain.AppUser</code>. With the following private fields:</p>
+<ol>
+  <li><code>int id</code></li>
+  <li><code>String name</code></li>
+  <li><code>String university</code></li>
+</ol>
+<p>
+Generate necessary getters and setters.
+</p>
+
+<h2>Task 3: Controller (simple)</h2>
+<p>Create controller <code>com.example.skillbuild.controller.MainController</code>.</p>
+<ol>
+  <li>Requests for URL <code>"/"</code> (POST and GET) should show the view <code>start</code> (the corresponding JSP already exists).</li>
+</ol>
+
+
+<h2>Task 4: Controller, View, and Form</h2>
+
+<p>Create field <code>public static List&lt;AppUser&gt; appUsers</code> in class <code>com.example.skillbuild.skillsBuildApplication</code>. Initialize the list to contain two appUsers.</p>
+
+<p>Create controller <code>com.example.skillbuild.controller.AppUserController</code> and add methods with request mappings for the following behavior:</p>
+<ol>
+  <li>GET requests for URL <code>"/appUsers"</code> should show view <code>appUsers/list</code>.
+    <ul>
+      <li>Add the list of all appUsers from <code>com.example.skillbuild.skillsBuildApplication</code> to the model as attribute <code>appUsers</code>.</li>
+      <li>Create the corresponding JSP to list the name and university of each appUser followed by a link to URL <code>"/terminate?appUser={id}"</code>, e.g., <code>"/terminate?appUser=3"</code>.</li>
+    </ul>
+  </li>
+  <li>Requests for URL <code>"/newAppUser"</code> should show view <code>appUsers/form</code>. Create the corresponding JSP with a form with <code>modelAttribute="appUser"</code> and <code>action="/addAppUser"</code> and inputs for all fields of class <code>AppUser</code>.</li>
+  <li>POST requests for URL <code>"/addAppUser"</code> should add a new appUser to the list of all appUsers in <code>com.example.skillbuild.skillsBuildApplication</code> and redirect to <code>/appUsers</code>.</li>
+</ol>
+
+
+<h2>Task 5: GET Requests</h2>
+<p>Extend controller <code>com.example.skillbuild.controller.AppUserController</code> and add methods with request mappings for the following behavior:</p>
+<ol>
+<li>GET requests for URL <code>"/terminate"</code> with request parameter <code>appUser={id}</code> should delete the appUser with the corresponding ID from the list of all appUsers in <code>com.example.skillbuild.skillsBuildApplication</code> and redirect to <code>/appUsers</code>.</li>
+</ol>
+
+<h2>Task 6: Validation</h2>
+
+<p>Set up a validator for class <code>AppUser</code> and make it available in controller <code>AppUserController</code>.</p>
+<p>When adding a new appUser validate that
+  <ol>
+    <li>The value of field <code>id</code> is unique within the list <code>LabExtraApplication.appUsers</code>.</li>
+    <li>The value of field <code>name</code> is not empty.</li>
+    <li>The value of field <code>university</code> is different from "UK" (MI-6 deploy appUsers only in foreign countries).</li>
+  </ol>
+  In case of validation errors go back to the form and show error messages for each field in the form.
+</p>
+
+</body>
+
+</html>

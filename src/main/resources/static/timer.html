@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Timers</title>
+    <style>
+        /* Match Dashboard Theme */
+        body {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            color: #fff; /* White text for contrast */
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .timer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .timer-box:hover {
+            transform: scale(1.05);
+        }
+
+        .timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #4CAF50; /* Green Start Button */
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            margin: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .pause-btn {
+            background-color: #ff9800; /* Orange Pause Button */
+        }
+
+        .pause-btn:hover {
+            background-color: #e68900;
+        }
+
+        .resume-btn {
+            background-color: #2196F3; /* Blue Resume Button */
+        }
+
+        .resume-btn:hover {
+            background-color: #0b7dda;
+        }
+
+        .stop-btn {
+            background-color: #f44336; /* Red Stop Button */
+        }
+
+        .stop-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .back-btn {
+            background-color: #673AB7; /* Purple Back Button */
+        }
+
+        .back-btn:hover {
+            background-color: #5e35b1;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Course Timers</h1>
+<div class="timer-container" id="timerContainer"></div>
+
+<button class="back-btn" onclick="goBack()">Back to Dashboard</button>
+
+<script>
+    const courses = [
+        "Java Programming", "Web Development", "Data Science",
+        "Machine Learning", "Cybersecurity", "AI & Robotics",
+        "Cloud Computing", "Blockchain", "Networking", "Database Management"
+    ];
+
+    function createTimer(name, index) {
+        const container = document.createElement("div");
+        container.classList.add("timer-box");
+
+        container.innerHTML = `
+                <h3>${name}</h3>
+                <div class="timer" id="timer-${index}">00:00:00</div>
+                <button onclick="startTimer(${index})">Start</button>
+                <button class="pause-btn" onclick="pauseTimer(${index})">Pause</button>
+                <button class="resume-btn" onclick="resumeTimer(${index})">Resume</button>
+                <button class="stop-btn" onclick="stopTimer(${index})">Stop</button>
+            `;
+        document.getElementById("timerContainer").appendChild(container);
+    }
+
+    let timers = {};
+    let running = {};
+    let intervals = {}; // ✅ Keep track of running intervals to prevent duplicates
+
+    function formatTime(seconds) {
+        const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
+        const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+        const secs = String(seconds % 60).padStart(2, "0");
+        return `${hrs}:${mins}:${secs}`;
+    }
+
+    function updateTimerDisplay(index) {
+        document.getElementById(`timer-${index}`).innerText = formatTime(timers[index]);
+        localStorage.setItem(`elapsedTime-${index}`, timers[index]);  // Persist time
+    }
+
+    function startTimer(index) {
+        if (!running[index]) {
+            running[index] = true;
+            timers[index] = parseInt(localStorage.getItem(`elapsedTime-${index}`)) || 0;
+            updateTimerDisplay(index);
+
+            // Only create one interval per timer
+            if (!intervals[index]) {
+                intervals[index] = setInterval(() => {
+                    if (running[index]) {
+                        timers[index]++;
+                        updateTimerDisplay(index);
+                    }
+                }, 1000);
+            }
+        }
+    }
+
+    function pauseTimer(index) {
+        running[index] = false;
+        clearInterval(intervals[index]); // Stop the interval
+        intervals[index] = null; // Mark interval as stopped
+    }
+
+    function resumeTimer(index) {
+        if (!running[index] && !intervals[index]) { // Only resume if timer is paused and no interval is running
+            running[index] = true;
+            intervals[index] = setInterval(() => {
+                if (running[index]) {
+                    timers[index]++;
+                    updateTimerDisplay(index);
+                }
+            }, 1000);
+        }
+    }
+
+    function stopTimer(index) {
+        running[index] = false;
+        clearInterval(intervals[index]); // ✅ Stop the interval
+        intervals[index] = null; // ✅ Mark interval as stopped
+        timers[index] = 0;
+        localStorage.setItem(`elapsedTime-${index}`, "0");
+        updateTimerDisplay(index);
+    }
+
+    function goBack() {
+        window.location.href = "/dashboard"; // ✅ Correct URL
+    }
+
+    // Load Timers
+    courses.forEach((course, index) => {
+        timers[index] = parseInt(localStorage.getItem(`elapsedTime-${index}`)) || 0;
+        createTimer(course, index);
+        updateTimerDisplay(index);
+    });
+
+</script>
+
+</body>
+</html>
